@@ -1,19 +1,19 @@
 WITH
     total_customer AS
     (   SELECT 
-            customer_id, 
-            SUM(total) total_purchased
+            invoice.customer_id customer_id, 
+            customer.first_name || " " || customer.last_name customer_name,
+            SUM(invoice.total) total_purchased,
+            customer.country country
         FROM invoice
-        GROUP BY customer_id
+        JOIN customer ON invoice.customer_id = customer.customer_id
+        GROUP BY invoice.customer_id
      )
-     
-SELECT 
-    customer.country,
-    customer.first_name || " " || customer.last_name customer_name,
-    total_customer.total_purchased,
-    MAX(total_customer.total_purchased) maximum
-FROM customer
-JOIN total_customer
-ON customer.customer_id = total_customer.customer_id
 
-ORDER BY country
+
+SELECT
+    country,
+    customer_name,
+    MAX(total_purchased) total_purchased
+FROM total_customer
+GROUP BY 1
